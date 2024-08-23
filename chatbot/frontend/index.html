@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול הזמנות Pending</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: white;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>מערכת ניהול הזמנות Pending</h1>
+    <button onclick="loadPendingOrders()">טען הזמנות Pending</button>
+
+    <table>
+        <thead>
+            <tr>
+                <tr>
+                    <th>מספר הזמנה</th>
+                    <th>פריטים</th>
+                    <th>כתובת</th>
+                    <th>סטטוס</th>
+                    <th>שם משתמש</th>  <!-- New column for username -->
+                    <th>פעולה</th>
+                </tr>
+                
+            </tr>
+        </thead>
+        <tbody id="orders-table-body">
+            <!-- ההזמנות יוצגו כאן -->
+        </tbody>
+    </table>
+
+    <script>
+        // פונקציה לטעינת הזמנות במצב Pending
+        async function loadPendingOrders() {
+            try {
+                const response = await fetch('http://localhost:5000/orders/pending');
+                const orders = await response.json();
+                const tableBody = document.getElementById('orders-table-body');
+                tableBody.innerHTML = ''; // נקה את הטבלה
+
+                orders.forEach(order => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${order.id}</td>
+                        <td>${order.items}</td>
+                        <td>${order.address}</td>
+                        <td>${order.pending}</td>
+                        <td>${order.username}</td>
+
+                        <td><button onclick="updateOrderStatus(${order.id})">עדכן סטטוס</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('שגיאה בטעינת ההזמנות:', error);
+            }
+        }
+
+        // פונקציה לעדכון סטטוס של הזמנה
+       // פונקציה לעדכון סטטוס של הזמנה
+async function updateOrderStatus(orderId) {
+    const newStatus = prompt("הקלד את הסטטוס החדש להזמנה:");
+    if (newStatus) {
+        try {
+            const response = await fetch(`http://localhost:5000/orders/pending/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: newStatus }),
+            });
+            if (response.ok) {
+                alert('סטטוס ההזמנה עודכן בהצלחה!');
+                loadPendingOrders(); // טען מחדש את ההזמנות
+            } else {
+                alert('שגיאה בעדכון סטטוס ההזמנה');
+            }
+        } catch (error) {
+            console.error('שגיאה בעדכון סטטוס ההזמנה:', error);
+        }
+    }
+}
+
+    </script>
+
+</body>
+</html>
