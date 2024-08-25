@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 import threading
 from queue import Queue
 # Telegram bot token (replace with your own)
-TELEGRAM_BOT_TOKEN = "xxxxx"
+TELEGRAM_BOT_TOKEN = '7394035467:AAHBZ-rEMbTDjMY5KaZtZnZtdJKdg6JV6_0'
 message_queue = Queue()
 # Initialize the bot
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
@@ -26,9 +26,6 @@ class PendingOrders(Resource):
         pending_orders = [order.serialize() for order in all_orders]
 
         return jsonify(pending_orders)
-    
-
-
 
   
 
@@ -53,6 +50,7 @@ class PendingOrders(Resource):
                 # Fetch the user's chat_id
                 user = User.query.get(order.user_id)
                 if user and user.chat_id:
+                    userid= User.query.filter_by(id=user.id).first()
                     message_queue.put((user.chat_id, id,user.username))
                     logging.info(f"Added Telegram notification for order {id} to queue")
 
