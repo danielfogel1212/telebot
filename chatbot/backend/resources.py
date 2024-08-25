@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 import threading
 from queue import Queue
 # Telegram bot token (replace with your own)
-TELEGRAM_BOT_TOKEN = '7394035467:AAHBZ-rEMbTDjMY5KaZtZnZtdJKdg6JV6_0'
+TELEGRAM_BOT_TOKEN = ''
 message_queue = Queue()
 # Initialize the bot
 bot = Bot(token=TELEGRAM_BOT_TOKEN)
